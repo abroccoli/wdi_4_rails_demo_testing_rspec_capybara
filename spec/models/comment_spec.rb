@@ -9,5 +9,9 @@ RSpec.describe Comment do
       expect(comment).to be_a Comment
       expect(comment.article).to be_a Article
     end
+
+    it 'is invalid without a body'do
+      expect(Comment.create(body: nil)).not_to be_valid
+    end
   end
 end
