@@ -24,6 +24,20 @@ RSpec.feature 'Managing Comments' do
     expect(page).to have_content(/success/i)
   end
 
+  scenario 'Edit a comment' do
+    article = Article.create!(title: 'One Stupid Trick', body: "You won't believe what they did next...")
+    comment = Comment.create!(body: 'dis be good', article: article)
+
+    visit "/articles/#{article.id}/comments/#{comment.id}/edit"
+
+    fill_in 'Body', with: 'dis also be good'
+
+    click_on 'Update Comment'
+
+    expect(page).to have_content(/success/i)
+    expect(page).to have_content 'dis also be good'
+
+  end
 
 
 end

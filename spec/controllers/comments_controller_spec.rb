@@ -98,4 +98,81 @@ RSpec.describe CommentsController do
         end
       end
     end
+
+  describe 'GET edit' do
+    it 'has a 200 status code' do
+      article = Article.create!(valid_attributes)
+      comment = Comment.create!(valid_comment)
+      article.comments << comment
+      get :edit, article_id: article.id, id: comment.id
+      expect(response.status).to eq 200
+    end
+
+    it 'renders the edit template' do
+      article = Article.create!(valid_attributes)
+      comment = Comment.create!(valid_comment)
+      article.comments << comment
+      get :edit, article_id: article.id, id: comment.id
+      expect(response).to render_template('edit')
+    end
+
+    it 'assigns @article' do
+      article = Article.create!(valid_attributes)
+      comment = Comment.create!(valid_comment)
+      article.comments << comment
+      get :edit, article_id: article.id, id: comment.id
+      expect(assigns(:comment)).to eq comment
+    end
+  end
+
+  describe 'PATCH update' do
+    context 'with valid attributes'do
+           let(:new_attributes) {
+          {body: 'yeah valid brah' }
+      }
+
+      it 'updates the requested article' do
+        article = Article.create!(valid_attributes)
+        comment = Comment.create!(valid_comment)
+        article.comments << comment
+        patch :update, article_id: article.id, id: comment.id, comment: new_attributes
+        comment.reload
+        expect(comment.body).to eq new_attributes[:body]
+      end
+
+      it 'assigns @comment' do
+        article = Article.create!(valid_attributes)
+        comment = Comment.create!(valid_comment)
+        article.comments << comment
+        patch :update, article_id: article.id, id: comment.id, comment: new_attributes
+        expect(assigns(:comment)).to eq comment
+      end
+
+      it 'redirects to the article' do
+        article = Article.create!(valid_attributes)
+        comment = Comment.create!(valid_comment)
+        article.comments << comment
+        patch :update, article_id: article.id, id: comment.id, comment: new_attributes
+        expect(response).to redirect_to article_comments_path(article)
+      end
+    end
+    context 'with invalid attributes' do
+      it 'assigns @comment' do
+        article = Article.create!(valid_attributes)
+        comment = Comment.create!(valid_comment)
+        article.comments << comment
+        patch :update, article_id: article.id, id: comment.id, comment: invalid_comment
+        expect(assigns(:comment)).to eq comment
+      end
+
+      it 're-renders the edit template' do
+        article = Article.create!(valid_attributes)
+        comment = Comment.create!(valid_comment)
+        article.comments << comment
+        patch :update, article_id: article.id, id: comment.id, comment: invalid_comment
+        expect(assigns(:comment)).to eq comment
+        expect(response).to render_template('edit')
+      end
+    end
+  end
 end
